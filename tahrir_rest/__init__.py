@@ -32,9 +32,15 @@ class TahrirRestApp(object):
         Deletes a badge with the given uid
         """
         if request.method == 'DELETE':
-            pass
+            result = self.database.delete_badge(uid)
+            if result != False:
+                return json.dumps({'success': True, 'id': result})
+            else:
+                return json.dumps({'success': False, 'id': uid})
         if request.method == 'GET':
-            pass
+            badge = self.database.get_badge(uid)
+            return json.dumps(badge.__json__())
+
     def add_badge(self):
         """
         POST: /badges
