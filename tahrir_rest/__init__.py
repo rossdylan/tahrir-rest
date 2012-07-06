@@ -1,4 +1,4 @@
-from flask import Flask, reqeust
+from flask import Flask
 from tahrir_api.dbapi import TahrirDatabase
 
 class TahrirRestApp(object):

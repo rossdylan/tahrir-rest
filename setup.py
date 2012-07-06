@@ -30,7 +30,7 @@ setup(
     zip_safe=False,
     install_requires=requires,
     entry_points="""
-    [paster.app_factory]
+    [paste.app_factory]
     main = tahrir_rest:main
     """
     )
