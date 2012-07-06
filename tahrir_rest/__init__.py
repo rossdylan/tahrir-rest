@@ -14,7 +14,8 @@ class TahrirRestApp(object):
         self.routes = {
                 "/badges/<uid>": (self.badges_uid, {'methods': ['GET', 'DELETE']}),
                 "/badges/": (self.add_badge, {'methods': ['POST']}),
-                "/people": (self.people, {'methods': ['GET', 'DELETE']}),
+                "/people/<uid>": (self.people, {'methods': ['GET', 'DELETE']}),
+                "/people/": (self.add_person, {'methods': ['POST']}),
                 }
         map(lambda route: self.app.route(
                 route,
@@ -42,6 +43,25 @@ class TahrirRestApp(object):
                 return json.dumps({})
             else:
                 return json.dumps(person.__json__())
+    def add_person(self):
+        """
+        POST: /people/
+        Add a new Person
+        """
+        try:
+            data = json.loads(request.data)
+        except:
+            abort(503)
+        try:
+            result = self.database.add_person(
+                    hash(data['email']),
+                    data['email']
+                    )
+            return json.dumps({'email': result})
+        except KeyError:
+            abort(503)
+
+
 
     def badges_uid(self, uid):
         """
@@ -81,7 +101,7 @@ class TahrirRestApp(object):
                     data['criteria'],
                     data['issuer_id']
                     )
-            return json.dumps({'badge_id': badge_id})
+            return json.dumps({'id': badge_id})
         except KeyError:
             abort(503)
 
