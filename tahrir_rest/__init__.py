@@ -1,5 +1,7 @@
-from flask import Flask
+import json
+from flask import Flask, request, abort
 from tahrir_api.dbapi import TahrirDatabase
+
 
 class TahrirRestApp(object):
     def __init__(self, dburi, salt):
@@ -29,14 +31,31 @@ class TahrirRestApp(object):
         return s a JSON blob with all the badge attributes
         Deletes a badge with the given uid
         """
-        pass
-
+        if request.method == 'DELETE':
+            pass
+        if request.method == 'GET':
+            pass
     def add_badge(self):
         """
         POST: /badges
         accepts a json blob with all the badge attributes
         """
-        pass
+        try:
+            data = json.loads(request.data)
+        except:
+            abort(503)
+        try:
+            badge_id = self.database.add_badge(
+                    data['name'],
+                    data['image'],
+                    data['desc'],
+                    data['criteria'],
+                    data['issuer_id']
+                    )
+            return json.dumps({'badge_id': badge_id})
+        except KeyError:
+            abort(503)
+
 
 
 
