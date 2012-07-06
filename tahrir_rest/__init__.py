@@ -9,10 +9,25 @@ class TahrirRestApp(object):
         self.database = TahrirDatabase(self.dburi)
         self.app = Flask(__name__)
 
-    def get_badge(self, uid):
+        self.routes = {
+                "/badges/<uid>": (self.badges_uid, {'methods': ['GET', 'DELETE']}),
+                "/badges/": (self.add_badge, {'methods': ['POST']}),
+                }
+        map(lambda route: self.app.route(
+                route,
+                self.routes[0],
+                **self.routes[1]
+            ),
+            self.routes
+        )
+
+
+    def badges_uid(self, uid):
         """
         GET: /badges/<uid>
+        DELETE: /badges/<uid>
         return s a JSON blob with all the badge attributes
+        Deletes a badge with the given uid
         """
         pass
 
@@ -23,11 +38,6 @@ class TahrirRestApp(object):
         """
         pass
 
-    def remove_badge(self):
-        """
-        DELETE /badges/<uid>
-        Deletes a badge with the given uid
-        """
 
 
 def main(globalArgs, **localArgs):
