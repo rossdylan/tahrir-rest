@@ -10,6 +10,7 @@ requires = [
         ]
 
 setup(
+    name="tahrir-rest",
     version='0.1.0',
     description='A webapp which exposes a restful api for tahrir',
     long_description=readme,
