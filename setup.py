@@ -2,7 +2,7 @@ import os
 from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
-readme = open(os.path.joins(here, 'README.rst')).read()
+readme = open(os.path.join(here, 'README.rst')).read()
 
 requires = [
         'tahrir-api',
@@ -29,6 +29,7 @@ setup(
     zip_safe=False,
     install_requires=requires,
     entry_points="""
+    [paster.app_factory]
     main = tahrir_rest:main
     """
     )
