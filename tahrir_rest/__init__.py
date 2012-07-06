@@ -1,7 +1,9 @@
 import json
 from flask import Flask, request, abort
 from tahrir_api.dbapi import TahrirDatabase
+import logging
 
+log = logging.getLogger("TahrirRest")
 
 class TahrirRestApp(object):
     def __init__(self, dburi, salt):
@@ -34,15 +36,21 @@ class TahrirRestApp(object):
         if request.method == 'DELETE':
             result = self.database.delete_person(uid)
             if result != False:
+                log.info("DELETE Request for /people/{0} succeeded".format(uid))
                 return json.dumps({'success': True, 'id': result})
             else:
+                log.info("DELETE Request for /people/{0} failed",format(uid))
                 return json.dumps({'success': False, 'id': uid})
+
         if request.method == 'GET':
             person = self.database.get_person(uid)
             if person == None:
+                log.info("GET request for /people/{0} failed".format(uid))
                 return json.dumps({})
             else:
+                log.info("GET request for /people/{0} suceeded".format(uid))
                 return json.dumps(person.__json__())
+
     def add_person(self):
         """
         POST: /people/
@@ -51,14 +59,17 @@ class TahrirRestApp(object):
         try:
             data = json.loads(request.data)
         except:
+            log.info("add_person Failed: could not parse request.data")
             abort(503)
         try:
             result = self.database.add_person(
                     hash(data['email']),
                     data['email']
                     )
+            log.info("Added Person: {0}".format(data['email']))
             return json.dumps({'email': result})
         except KeyError:
+            log.info("add_person Failed: JSON doesn't include all required fields")
             abort(503)
 
 
@@ -73,15 +84,19 @@ class TahrirRestApp(object):
         if request.method == 'DELETE':
             result = self.database.delete_badge(uid)
             if result != False:
+                log.info("DELETE Request for /badges/{0} suceeded".format(uid))
                 return json.dumps({'success': True, 'id': result})
             else:
+                log.info("DELETE Request for /badges/{0} failed".format(uid))
                 return json.dumps({'success': False, 'id': uid})
 
         if request.method == 'GET':
             badge = self.database.get_badge(uid)
             if badge == None:
+                log.info("GET Request for /badges/{0} succeeded".format(uid))
                 return json.dumps({})
             else:
+                log.info("GET Request for /badges/{0} succeeded".format(uid))
                 return json.dumps(badge.__json__())
 
     def add_badge(self):
@@ -92,6 +107,7 @@ class TahrirRestApp(object):
         try:
             data = json.loads(request.data)
         except:
+            log.info("add_badge Failed: Could not parse request.data")
             abort(503)
         try:
             badge_id = self.database.add_badge(
@@ -101,8 +117,10 @@ class TahrirRestApp(object):
                     data['criteria'],
                     data['issuer_id']
                     )
+            log.info("Added Badge: {0}".format(data['name']))
             return json.dumps({'id': badge_id})
         except KeyError:
+            log.info("add_badge Failed: JSON does not have required fields")
             abort(503)
 
 
