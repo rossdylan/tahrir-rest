@@ -14,6 +14,7 @@ class TahrirRestApp(object):
         self.routes = {
                 "/badges/<uid>": (self.badges_uid, {'methods': ['GET', 'DELETE']}),
                 "/badges/": (self.add_badge, {'methods': ['POST']}),
+                "/people": (self.people, {'methods': ['GET', 'DELETE']}),
                 }
         map(lambda route: self.app.route(
                 route,
@@ -23,6 +24,24 @@ class TahrirRestApp(object):
             self.routes
         )
 
+    def people(self, uid):
+        """
+        GET: /people/<uid>
+        Delete: /people/<uid>
+        Get info on a person, or delete them
+        """
+        if request.method == 'DELETE':
+            result = self.database.delete_person(uid)
+            if result != False:
+                return json.dumps({'success': True, 'id': result})
+            else:
+                return json.dumps({'success': False, 'id': uid})
+        if request.method == 'GET':
+            person = self.database.get_person(uid)
+            if person == None:
+                return json.dumps({})
+            else:
+                return json.dumps(person.__json__())
 
     def badges_uid(self, uid):
         """
@@ -37,9 +56,13 @@ class TahrirRestApp(object):
                 return json.dumps({'success': True, 'id': result})
             else:
                 return json.dumps({'success': False, 'id': uid})
+
         if request.method == 'GET':
             badge = self.database.get_badge(uid)
-            return json.dumps(badge.__json__())
+            if badge == None:
+                return json.dumps({})
+            else:
+                return json.dumps(badge.__json__())
 
     def add_badge(self):
         """
