@@ -27,4 +27,8 @@ setup(
     packages = ["tahrir_rest",],
     include_package_data=True,
     zip_safe=False,
-    install_requires=requires)
+    install_requires=requires,
+    entry_points="""
+    main = tahrir_rest:main
+    """
+    )
