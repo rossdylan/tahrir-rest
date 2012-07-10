@@ -18,6 +18,8 @@ class TahrirRestApp(object):
                 "/badges/": (self.add_badge, {'methods': ['POST']}),
                 "/people/<uid>": (self.people, {'methods': ['GET', 'DELETE']}),
                 "/people/": (self.add_person, {'methods': ['POST']}),
+                "/issuers/<uid>": (self.issuers, {'methods': ['GET', 'DELETE']}),
+                "/issuers/": (self.add_issuer, {'methods': ['POST']}),
                 }
         map(lambda route: self.app.route(
                 route,
