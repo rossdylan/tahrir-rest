@@ -6,7 +6,8 @@ readme = open(os.path.join(here, 'README.rst')).read()
 
 requires = [
         'tahrir-api',
-        'flask'
+        'flask',
+        'pastescript'
         ]
 
 setup(
