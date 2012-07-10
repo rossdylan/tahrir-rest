@@ -93,7 +93,7 @@ class TahrirRestApp(object):
         if request.method == 'GET':
             badge = self.database.get_badge(uid)
             if badge == None:
-                log.info("GET Request for /badges/{0} succeeded".format(uid))
+                log.info("GET Request for /badges/{0} failed".format(uid))
                 return json.dumps({})
             else:
                 log.info("GET Request for /badges/{0} succeeded".format(uid))
@@ -123,6 +123,53 @@ class TahrirRestApp(object):
             log.info("add_badge Failed: JSON does not have required fields")
             abort(503)
 
+    def issuers(self, uid):
+        """
+        GET /issuers/<id>
+        DELETE /issuers/<id>
+        Delete or Get an issuer
+        """
+
+        if request.method == 'GET':
+            issuer = self.database.get_issuer(uid)
+            if issuer == None:
+                log.info('GET Request for /issuers/{0} failed'.format(uid))
+                return json.dumps({})
+            else:
+                log.info('Get Request for /issuers/{0} succeeded'.format(uid))
+                return json.dumps(issuer.__json__())
+        if request.method == 'DELETE':
+            result = self.database.delete_issuer(uid)
+            if result != False:
+                log.info("DELETE Request for /issuers/{0} suceeded".format(uid))
+                return json.dumps({'success': True, 'id': uid})
+            else:
+                log.info('DELETE Request for /issuers/{0} failed'.format(uid))
+                return json.dumps({'success': False, 'id': uid})
+
+    def add_issuer(self):
+        """
+        POST /issuers/
+        Add a new issuer
+        """
+
+        try:
+            data = json.loads(request.data)
+        except:
+            log.info("add_issuer Failed: Could not parse request.data")
+            abort(503)
+        try:
+            issuer_id = self.database.add_badge(
+                    data['origin'],
+                    data['name'],
+                    data['org'],
+                    data['contact']
+                    )
+            log.info("Added issuer: {0}".format(data['name']))
+            return json.dumps({'id': issuer_id})
+        except KeyError:
+            log.info("add_issuer Failed: JSON does not have required fields")
+            abort(503)
 
 
 
