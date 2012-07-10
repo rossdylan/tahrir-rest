@@ -23,8 +23,8 @@ class TahrirRestApp(object):
                 }
         map(lambda route: self.app.route(
                 route,
-                self.routes[0],
-                **self.routes[1]
+                self.routes[route][0],
+                **self.routes[route][1]
             ),
             self.routes
         )
