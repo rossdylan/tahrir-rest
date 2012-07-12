@@ -20,6 +20,8 @@ class TahrirRestApp(object):
                 "/people/": (self.add_person, {'methods': ['POST']}),
                 "/issuers/<uid>": (self.issuers, {'methods': ['GET', 'DELETE']}),
                 "/issuers/": (self.add_issuer, {'methods': ['POST']}),
+                "/assertions/<email>": (self.assertions, {'methods': ['GET']}),
+                "/assertions/": (self.add_assertions, {'methods': ['POST']}),
                 }
         map(
             lambda route: self.app.route(route, **self.routes[route][1])(
@@ -172,7 +174,46 @@ class TahrirRestApp(object):
             log.info("add_issuer Failed: JSON does not have required fields")
             abort(503)
 
+    def assertions(self, email):
+        """
+        GET /assertions/<email>
+        Return a list of all assertions awarded to the given email
+        """
+        results = self.database.get_assertions_by_email(email)
+        if results == False:
+            log.info("GET /assertions/{0} failed".format(email))
+            return json.dumps({"success": False, "email": email})
+        else:
+            expanded_results = {
+                    'success': True,
+                    'assertions': [r.__json__() for r in results]}
+            return json.dumps(expanded_results)
 
+    def add_assertion(self):
+        """
+        POST /assertions/
+        Add a new assertion
+        """
+
+        try:
+            data = json.loads(request.data)
+        except:
+            log.info("add_assertion Failed: Could not parse request.data")
+            abort(503)
+        try:
+            person_email, badge_id = self.database.add_assertion(
+                    data['badge_id'],
+                    data['person_email'],
+                    data.get('issued_on', None)
+                    )
+            return json.dumps({
+                'success': True,
+                'badge_id': badge_id,
+                'person_email': person_email
+                })
+        except KeyError:
+            log.info("add_assertion Failed: JSON does not have the required fields")
+            abort(503)
 
 def main(globalArgs, **localArgs):
     dburi = globalArgs.get('sqlalchemy.url', 'sqlite:///tahrir.db')
