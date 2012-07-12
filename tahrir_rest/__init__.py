@@ -21,7 +21,7 @@ class TahrirRestApp(object):
                 "/issuers/<uid>": (self.issuers, {'methods': ['GET', 'DELETE']}),
                 "/issuers/": (self.add_issuer, {'methods': ['POST']}),
                 "/assertions/<email>": (self.assertions, {'methods': ['GET']}),
-                "/assertions/": (self.add_assertions, {'methods': ['POST']}),
+                "/assertions/": (self.add_assertion, {'methods': ['POST']}),
                 }
         map(
             lambda route: self.app.route(route, **self.routes[route][1])(
